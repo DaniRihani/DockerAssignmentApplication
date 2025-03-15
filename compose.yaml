@@ -1,0 +1,42 @@
+version: '3.8'
+
+services:
+  auth-service:
+    build: ./auth-service
+    container_name: auth-service
+    ports:
+      - "8081:8081"
+    networks:
+      - backend
+    depends_on:
+      - mysql-db
+
+  webapp-service:
+    build: ./webapp-service
+    container_name: webapp-service
+    ports:
+      - "8080:8080"
+    networks:
+      - backend
+    depends_on:
+      - auth-service
+
+  mysql-db:
+    image: mysql:8
+    container_name: mysql-db
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpassword
+      MYSQL_DATABASE: mydatabase
+    ports:
+      - "3306:3306"
+    networks:
+      - backend
+    volumes:
+      - mysql-data:/var/lib/mysql
+
+networks:
+  backend:
+
+volumes:
+  mysql-data:
